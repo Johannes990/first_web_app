@@ -2,12 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="widht=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Page two</title>
 </head>
 <body>
     <h1>This is the second page of our new rust web app (only running locally, though...)</h1>
     <button onclick="navigateTo('/')">Go back to the index page</button>
+    <button onclick="navigateTo('/page_three')">Go to third page</button>
+
     <script>
         function navigateTo(path) {
             window.location.href = path;

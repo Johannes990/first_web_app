@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Index page</title>
+    <title>Page three</title>
 </head>
 <body>
-    <h1>Index page, hello all newcomers to this Rust web thing!</h1>
+    <h1>Page three</h1>
+    <h2>Get some data fields here</h2>
+    <button onclick="navigateTo('/')">Go back to index page</button>
     <button onclick="navigateTo('/page_two')">Go to second page</button>
-    <button onclick="navigateTo('/page_three')">Go to third page</button>
+
     <script>
         function navigateTo(path) {
             window.location.href = path;
