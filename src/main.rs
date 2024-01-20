@@ -13,11 +13,11 @@ async fn page_two() -> HttpResponse {
 #[actix_web::main]
 async fn main() -> Result<()> {
     HttpServer::new(|| {
-        App::new().route("/two", web::get().to(page_two))
+        App::new()
+            .route("/", web::get().to(index))
+            .route("/page_two", web::get().to(page_two))
     })
         .bind("127.0.0.1:8080")?
         .run()
         .await
 }
-
-fn main() {}
