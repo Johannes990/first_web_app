@@ -1,13 +1,16 @@
 use actix_web::{web, App, HttpServer, HttpResponse};
 use std::io::{Result};
+use std::fs;
 
 
-async fn index() -> HttpResponse {
-    HttpResponse::Ok().body("Hello, rust web services!!!")
+async fn index() -> Result<HttpResponse> {
+    let path = concat!(env!("CARGO_MANIFEST_DIR"), "src/pages/index.html");
+    Ok(HttpResponse::Ok().content_type("text/html").body(fs::read_to_string(path)?))
 }
 
-async fn page_two() -> HttpResponse {
-    HttpResponse::Ok().body("site numero dos")
+async fn page_two() -> Result<HttpResponse> {
+    let path = concat!(env!("CARGO_MANIFEST_DIR"), "src/pages/page_two.html");
+    Ok(HttpResponse::Ok().content_type("text/html").body(fs::read_to_string(path)?))
 }
 
 #[actix_web::main]
