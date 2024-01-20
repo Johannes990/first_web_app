@@ -2,6 +2,7 @@ use std::fmt;
 use std::fmt::Formatter;
 use std::path::{Path, PathBuf};
 use actix_web::ResponseError;
+use log::info;
 
 
 #[derive(Debug)]
@@ -24,6 +25,8 @@ pub enum FilePath {
 impl FilePath {
     fn get_full_pages_path(&self) -> PathBuf {
         let base_path = get_project_root().join("src/pages");
+
+        info!("Base path for {:?} received.", base_path);
 
         match self {
             FilePath::Index => base_path.join("index.html"),

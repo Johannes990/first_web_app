@@ -1,21 +1,23 @@
 mod paths;
 
-use actix_web::{web, App, HttpServer, HttpResponse, Result, ResponseError};
+use actix_web::{web, App, HttpServer, HttpResponse, Result};
 use std::fs;
 use std::io::Error;
 use crate::paths::{FilePath, path_control};
-use env_logger;
+use log::info;
 
 
 async fn serve_html(filename: FilePath) -> Result<HttpResponse, actix_web::Error> {
     let path = path_control(filename)?;
+
+    info!("Serving file from path: {:?}", path);
 
     Ok(HttpResponse::Ok().content_type("text/html").body(fs::read_to_string(&path)?))
 }
 
 #[actix_web::main]
 async fn main() -> Result<(), Error> {
-    env_logger::init();
+    env_logger::Builder::from_default_env().filter_level(log::LevelFilter::Info).init();
     HttpServer::new(|| {
         App::new()
             .route("/", web::get().to(|| serve_html(FilePath::Index)))

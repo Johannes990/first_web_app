@@ -560,6 +560,7 @@ dependencies = [
  "actix",
  "actix-web",
  "env_logger",
+ "log",
 ]
 
 [[package]]
