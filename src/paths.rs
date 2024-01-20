@@ -23,7 +23,7 @@ pub enum FilePath {
 }
 
 impl FilePath {
-    fn get_full_pages_path(&self) -> PathBuf {
+    pub fn get_full_path(&self) -> PathBuf {
         let base_path = get_project_root().join("src/pages");
 
         info!("Base path for {:?} received.", base_path);
@@ -43,7 +43,7 @@ fn get_project_root() -> PathBuf {
 }
 
 pub fn path_control(file_path: FilePath) -> Result<PathBuf, FileNotFoundError> {
-    let path = file_path.get_full_pages_path();
+    let path = file_path.get_full_path();
 
     if !path.exists() {
         println!("File not found: {:?}", path);
