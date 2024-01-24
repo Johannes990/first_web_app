@@ -2,7 +2,6 @@ use std::fmt;
 use std::fmt::Formatter;
 use std::path::{Path, PathBuf};
 use actix_web::ResponseError;
-use log::info;
 
 
 #[derive(Debug)]
@@ -20,6 +19,7 @@ pub enum FilePath {
     Index,
     SecondPage,
     ThirdPage,
+    Upload,
 }
 
 impl FilePath {
@@ -30,6 +30,7 @@ impl FilePath {
             FilePath::Index => base_path.join("index.html"),
             FilePath::SecondPage => base_path.join("page_two.html"),
             FilePath::ThirdPage => base_path.join("page_three.html"),
+            FilePath::Upload => base_path.join("upload_file_page.html"),
         }
     }
 }

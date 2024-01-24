@@ -4,6 +4,7 @@ mod data_structs;
 
 
 use actix_web::{web, App, HttpServer, HttpResponse, Result};
+use futures_util::stream::StreamExt;
 use std::fs;
 use std::io::Error;
 use crate::paths::{FilePath, path_control};
@@ -22,6 +23,20 @@ async fn serve_html(filename: FilePath) -> Result<HttpResponse, actix_web::Error
 
 async fn serve_text_input_page() -> HttpResponse {
     let path = FilePath::ThirdPage.get_full_path();
+
+    info!("Posting to path: {:?}", path);
+
+    match fs::read_to_string(&path) {
+        Ok(content) => HttpResponse::Ok().content_type("text/html").body(content),
+        Err(err) => {
+            error!("Failed to read file: {:?}", err);
+            HttpResponse::InternalServerError().body("Internal server error")
+        }
+    }
+}
+
+async fn serve_file_upload_page() -> HttpResponse {
+    let path = FilePath::Upload.get_full_path();
 
     info!("Posting to path: {:?}", path);
 
@@ -61,6 +76,16 @@ async fn process_text(form: web::Form<TextForm>) -> HttpResponse {
     response
 }
 
+async fn upload_file(mut payload: web::Payload) -> Result<String> {
+    let mut buffer = Vec::new();
+    while let Some(chunk) = payload.next().await {
+        buffer.extend_from_slice(&chunk?);
+    }
+
+    let file_contents = String::from_utf8_lossy(&buffer);
+    Ok(format!("File uploaded successfully. Size: {} bytes\ncontents:\n{:?}", buffer.len(), file_contents))
+}
+
 #[actix_web::main]
 async fn main() -> Result<(), Error> {
     env_logger::Builder::from_default_env().filter_level(log::LevelFilter::Info).init();
@@ -70,6 +95,8 @@ async fn main() -> Result<(), Error> {
             .route("/page_two", web::get().to(|| serve_html(FilePath::SecondPage)))
             .route("/page_three", web::get().to(serve_text_input_page))
             .route("/process_text", web::post().to(process_text))
+            .route("/upload_file_page", web::get().to(serve_file_upload_page))
+            .route("/upload_file", web::post().to(upload_file))
     })
         .bind("127.0.0.1:8085")?
         .run()
