@@ -26,8 +26,6 @@ impl FilePath {
     pub fn get_full_path(&self) -> PathBuf {
         let base_path = get_project_root().join("src/pages");
 
-        info!("Base path for {:?} received.", base_path);
-
         match self {
             FilePath::Index => base_path.join("index.html"),
             FilePath::SecondPage => base_path.join("page_two.html"),

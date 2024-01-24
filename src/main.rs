@@ -1,10 +1,12 @@
 mod paths;
+mod fileparser;
 
 use actix_web::{web, App, HttpServer, HttpResponse, Result};
 use std::fs;
 use std::io::Error;
 use crate::paths::{FilePath, path_control};
 use log::{info, error};
+use crate::fileparser::readFile;
 
 #[derive(serde::Deserialize)]
 struct TextForm {
@@ -36,9 +38,10 @@ async fn serve_text_input_page() -> HttpResponse {
 
 async fn process_text(form: web::Form<TextForm>) -> HttpResponse {
     let user_input = form.user_input.clone();
+    let file_contents = fileparser::readFile(&user_input);
 
     info!("User entered text: {:?}", user_input);
-    HttpResponse::Ok().body(format!("Processed text: {}", user_input))
+    HttpResponse::Ok().body(format!("Processed text: \n{}", file_contents))
 }
 
 #[actix_web::main]
