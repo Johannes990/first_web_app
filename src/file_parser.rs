@@ -22,12 +22,12 @@ pub fn write_file(filename: &str, contents: &str) {
     let path = Path::new(&filename);
     let display = path.display();
 
-    let mut file = match OpenOptions::new().write(true).create(true).open(path) {
+    let mut file = match OpenOptions::new().write(true).create(true).truncate(true).open(path) {
         Err(error) => panic!("Couldn't create or overwrite {}: {}", display, error),
         Ok(file) => file,
     };
 
-    match file.write(contents.as_bytes()) {
+    match writeln!(file, "{}", contents) {
         Err(error) => panic!("Couldn't write {}: {}", display, error),
         Ok(_) => {}
     }
@@ -42,7 +42,7 @@ pub fn append_file(filename: &str, contents: &str) {
         Ok(file) => file,
     };
 
-    match file.write(contents.as_bytes()) {
+    match writeln!(file, "{}", contents) {
         Err(error) => panic!("Couldn't write {}: {}", display, error),
         Ok(_) => {}
     }
