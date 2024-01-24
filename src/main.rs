@@ -4,9 +4,10 @@ mod data_structs;
 
 
 use actix_web::{web, App, HttpServer, HttpResponse, Result};
+use actix_multipart::Multipart;
 use futures_util::stream::StreamExt;
 use std::fs;
-use std::io::Error;
+use std::io;
 use crate::paths::{FilePath, path_control};
 use log::{info, error};
 use crate::file_parser::{read_file, write_file, append_file};
@@ -76,18 +77,20 @@ async fn process_text(form: web::Form<TextForm>) -> HttpResponse {
     response
 }
 
-async fn upload_file(mut payload: web::Payload) -> Result<String> {
+async fn upload_file(mut payload: Multipart) -> Result<HttpResponse, actix_web::Error> {
     let mut buffer = Vec::new();
-    while let Some(chunk) = payload.next().await {
-        buffer.extend_from_slice(&chunk?);
-    }
+    while let Some(item) = payload.next().await {
+        let mut field = item?;
 
-    let file_contents = String::from_utf8_lossy(&buffer);
-    Ok(format!("File uploaded successfully. Size: {} bytes\ncontents:\n{:?}", buffer.len(), file_contents))
+        while let Some(chunk) = field.next().await {
+            buffer.extend_from_slice(&chunk?)
+        }
+    }
+    Ok(HttpResponse::Ok().body(format!("read chunk:\n{:?}", std::str::from_utf8(&*buffer))))
 }
 
 #[actix_web::main]
-async fn main() -> Result<(), Error> {
+async fn main() -> Result<(), io::Error> {
     env_logger::Builder::from_default_env().filter_level(log::LevelFilter::Info).init();
     HttpServer::new(|| {
         App::new()
