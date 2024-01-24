@@ -1,17 +1,15 @@
 mod paths;
-mod fileparser;
+mod file_parser;
+mod data_structs;
+
 
 use actix_web::{web, App, HttpServer, HttpResponse, Result};
 use std::fs;
 use std::io::Error;
 use crate::paths::{FilePath, path_control};
 use log::{info, error};
-use crate::fileparser::readFile;
-
-#[derive(serde::Deserialize)]
-struct TextForm {
-    user_input: String,
-}
+use crate::file_parser::{read_file, write_file, append_file};
+use crate::data_structs::TextForm;
 
 
 async fn serve_html(filename: FilePath) -> Result<HttpResponse, actix_web::Error> {
@@ -37,11 +35,25 @@ async fn serve_text_input_page() -> HttpResponse {
 }
 
 async fn process_text(form: web::Form<TextForm>) -> HttpResponse {
-    let user_input = form.user_input.clone();
-    let file_contents = fileparser::readFile(&user_input);
+    let file_path = form.get_file_path();
+    let handling_mode = form.get_handling_mode();
+    let contents = form.get_contents();
 
-    info!("User entered text: {:?}", user_input);
-    HttpResponse::Ok().body(format!("Processed text: \n{}", file_contents))
+    info!("User entered text: {:?}/n{:?}/n{:?}", file_path, handling_mode, contents);
+
+    match handling_mode {
+        "r" => {
+            let file_contents = read_file(&file_path);
+            return HttpResponse::Ok().body(format!("Read contents: \n{}", file_contents));
+        },
+        "w" => write_file(&file_path, &contents),
+        "a" => append_file(&file_path, &contents),
+        _ => {
+            let response = String::from("No such file handling mode available\nPlease use 'r' for read, 'w' for write, 'a' for append");
+            return HttpResponse::Ok().body(format!("{}", response));
+        }
+    }
+    HttpResponse::Ok().body(format!("Processed file: {}", file_path))
 }
 
 #[actix_web::main]

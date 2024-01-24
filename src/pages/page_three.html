@@ -13,8 +13,12 @@
     <h2>Let's get some input from the web page!!!</h2>
     <form action="/process_text" method="post">
         <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-        <label for="user_input">Enter text:</label>
-        <input type="text" id="user_input" name="user_input" required>
+        <label for="file_path">Enter file path:</label>
+        <input type="text" id="file_path" name="file_path" required>
+        <label for="handling_mode">Enter handling mode ('r' for read, 'w' for write, 'a' for append)</label>
+        <input type="text" id="handling_mode" name="handling_mode" required>
+        <label for="contents">Enter contents for modes 'w', 'a'</label>
+        <input type="text" id="contents" name="contents">
         <button type="submit">Process text</button>
     </form>
 
